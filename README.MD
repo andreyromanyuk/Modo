@@ -1,7 +1,7 @@
 # Modo
 
-[![Maven Central](https://img.shields.io/maven-central/v/com.github.terrakok/modo-compose)](https://repo1.maven.org/maven2/com/github/terrakok)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![](https://jitpack.io/v/andreyromanyuk/Modo.svg)](https://jitpack.io/#andreyromanyuk/Modo)
 
 Modo is navigation library for Jetpack Compose based on UDF principles for developing Single Activity applications.
 
