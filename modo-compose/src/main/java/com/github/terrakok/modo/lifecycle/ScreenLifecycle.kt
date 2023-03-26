@@ -46,7 +46,6 @@ class ScreenLifecycleImpl(
             updateLifecycleState(state)
         }
 
-    private val lifecycle = LifecycleRegistry(this)
     private val savedStateRegistryController = SavedStateRegistryController.create(this)
     private val store = ViewModelStore()
 
@@ -54,22 +53,19 @@ class ScreenLifecycleImpl(
 
     private val defaultFactory by lazy { SavedStateViewModelFactory(app, this) }
 
+    override val lifecycle = LifecycleRegistry(this)
+    override val defaultViewModelProviderFactory: ViewModelProvider.Factory = defaultFactory
+
+    override val viewModelStore: ViewModelStore = store
+
     private var savedStateRegistryRestored = false
 
     override fun setApplication(app: Application?) {
         this.app = app
     }
 
-    override fun getLifecycle(): Lifecycle = lifecycle
-
-    override fun getViewModelStore(): ViewModelStore = store
-
     override val savedStateRegistry: SavedStateRegistry =
         savedStateRegistryController.savedStateRegistry
-
-    override fun getDefaultViewModelProviderFactory(): ViewModelProvider.Factory {
-        return defaultFactory
-    }
 
     override fun updateLifecycleState(state: Lifecycle.State) {
         if (lifecycle.currentState == state) return
@@ -111,13 +107,6 @@ internal fun Screen.LifecycleHandler(parentLifecycle: Lifecycle) {
         parentLifecycleState = parentLifecycle.currentState
         val observer = LifecycleEventObserver { source, event ->
             if (event == Lifecycle.Event.ON_DESTROY && activity?.isChangingConfigurations == true) {
-                /**
-                 * Instance of the screen isn't recreated during config changes so skip this event
-                 * to avoid crash while accessing to ViewModel with SavedStateHandle, because after
-                 * ON_DESTROY, [androidx.lifecycle.SavedStateHandleController] is marked as not
-                 * attached and next call of [registerSavedStateProvider] after recreating Activity
-                 * on the same instance causing the crash.
-                 */
                 return@LifecycleEventObserver
             }
             if (event == Lifecycle.Event.ON_STOP) {
